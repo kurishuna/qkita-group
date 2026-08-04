@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>趣味ポータル</title>
+    <title>那須さんのお言葉/title>
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 0 10px; line-height: 1.6; }
         .hidden { display: none; }
@@ -24,7 +24,7 @@
 
     <!-- ================= トップページビュー ================= -->
     <div id="view-top" class="hidden">
-        <h1>🎨 趣味の投稿一覧</h1>
+        <h1>🎨 那須さんのお言葉投稿一覧</h1>
         <!-- 管理者用追加フォーム -->
         <fieldset id="admin-form">
             <legend>新規投稿の追加</legend>
@@ -66,10 +66,10 @@
             storageBucket: "hs-portal-5537c.firebasestorage.app"
         };
 
-        // 💡 趣味専用の引き出し（posts_hobby.json）に通信先を変更
+        // 💡 那須さんのお言葉専用の引き出し（posts_nassan.json）に通信先を変更
         const baseDbUrl = firebaseConfig.databaseURL.endsWith('/') 
-            ? firebaseConfig.databaseURL + 'posts_hobby.json' 
-            : firebaseConfig.databaseURL + '/posts_hobby.json';
+            ? firebaseConfig.databaseURL + 'posts_nassan.json' 
+            : firebaseConfig.databaseURL + '/posts_nassan.json';
 
         let postData = {};
 
@@ -203,7 +203,7 @@
             });
         }
 
-        // --- 趣味専用の保存機能 ---
+        // --- 那須さんのお言葉専用の保存機能 ---
         function createPost() {
             const dateInput = document.getElementById('input-date').value;
             const titleInput = document.getElementById('input-title').value.trim();
@@ -215,10 +215,10 @@
 
             const uniqueKey = dateInput + "_" + Date.now();
 
-            // 💡 趣味専用の引き出し（posts_hobby）に保存
+            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）に保存
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
-                ? `${firebaseConfig.databaseURL}posts_hobby/${uniqueKey}.json`
-                : `${firebaseConfig.databaseURL}/posts_hobby/${uniqueKey}.json`;
+                ? `${firebaseConfig.databaseURL}posts_nassan/${uniqueKey}.json`
+                : `${firebaseConfig.databaseURL}/posts_nassan/${uniqueKey}.json`;
 
             const saveData = {
                 title: titleInput,
@@ -251,7 +251,7 @@
             }
         }
 
-        // --- 趣味専用の編集機能 ---
+        // --- 那須さんのお言葉専用の編集機能 ---
         function updatePostDetail() {
             const currentParam = new URLSearchParams(window.location.search).get('date');
             const updatedTitle = document.getElementById('edit-title').value.trim();
@@ -260,10 +260,10 @@
             if (!updatedTitle) return alert('タイトルを入力してください。');
             if (!updatedContent) return alert('コンテンツを入力してください。');
 
-            // 💡 趣味専用の引き出し（posts_hobby）を更新
+            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）を更新
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
-                ? `${firebaseConfig.databaseURL}posts_hobby/${currentParam}.json`
-                : `${firebaseConfig.databaseURL}/posts_hobby/${currentParam}.json`;
+                ? `${firebaseConfig.databaseURL}posts_nassan/${currentParam}.json`
+                : `${firebaseConfig.databaseURL}/posts_nassan/${currentParam}.json`;
             
             const saveData = {
                 title: updatedTitle,
@@ -281,15 +281,15 @@
             });
         }
 
-        // --- 趣味専用の削除機能 ---
+        // --- 那須さんのお言葉専用の削除機能 ---
         function deletePost(postKey) {
             const postObj = typeof postData[postKey] === 'object' ? postData[postKey] : { title: "この投稿", content: "" };
             if (!confirm(`「${postObj.title}」を削除してもよろしいですか？`)) return;
 
-            // 💡 趣味専用の引き出し（posts_hobby）から削除
+            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）から削除
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
-                ? `${firebaseConfig.databaseURL}posts_hobby/${postKey}.json`
-                : `${firebaseConfig.databaseURL}/posts_hobby/${postKey}.json`;
+                ? `${firebaseConfig.databaseURL}posts_nassan/${postKey}.json`
+                : `${firebaseConfig.databaseURL}/posts_nassan/${postKey}.json`;
 
             fetch(singleUrl, {
                 method: 'DELETE'
