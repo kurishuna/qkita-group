@@ -78,7 +78,10 @@
             fetch(baseDbUrl)
                 .then(res => res.json())
                 .then(data => {
+                    // 💡 データが空（null）であっても空のオブジェクトとして処理を続行
                     postData = data || {};
+                    
+                    // 💡 データが空のときも、ローディング表示を確実に隠す処理を追加
                     document.getElementById('loading').classList.add('hidden');
                     
                     const params = new URLSearchParams(window.location.search);
