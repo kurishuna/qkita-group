@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>那須さんのお言葉/title>
+    <title>那須さんのお言葉</title>
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 0 10px; line-height: 1.6; }
         .hidden { display: none; }
@@ -24,7 +24,7 @@
 
     <!-- ================= トップページビュー ================= -->
     <div id="view-top" class="hidden">
-        <h1>🎨 那須さんのお言葉投稿一覧</h1>
+        <h1>📅 那須さんのお言葉の投稿一覧</h1>
         <!-- 管理者用追加フォーム -->
         <fieldset id="admin-form">
             <legend>新規投稿の追加</legend>
@@ -54,6 +54,7 @@
             <button id="btn-edit-cancel">キャンセル</button>
         </div>
     </div>
+
     <script>
         // -------------------------------------------------------------
         // 【重要】あなた自身の Firebase 設定情報に書き換えてください！
@@ -66,7 +67,7 @@
             storageBucket: "hs-portal-5537c.firebasestorage.app"
         };
 
-        // 💡 那須さんのお言葉専用の引き出し（posts_nassan.json）に通信先を変更
+        // 💡 那須さんのお言葉専用の引き出し（posts_nassan.json）に設定
         const baseDbUrl = firebaseConfig.databaseURL.endsWith('/') 
             ? firebaseConfig.databaseURL + 'posts_nassan.json' 
             : firebaseConfig.databaseURL + '/posts_nassan.json';
@@ -78,10 +79,8 @@
             fetch(baseDbUrl)
                 .then(res => res.json())
                 .then(data => {
-                    // 💡 データが空（null）であっても空のオブジェクトとして処理を続行
                     postData = data || {};
-                    
-                    // 💡 データが空のときも、ローディング表示を確実に隠す処理を追加
+                    // データが空（null）でも確実にローディングを隠す
                     document.getElementById('loading').classList.add('hidden');
                     
                     const params = new URLSearchParams(window.location.search);
@@ -116,6 +115,7 @@
             document.getElementById('view-detail').classList.add('hidden');
             renderList();
             
+            // 今日の日付をデフォルトで自動セット
             document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('input-title').value = '';
             document.getElementById('input-content').value = '';
@@ -143,7 +143,7 @@
             
             document.getElementById('detail-title-display').innerHTML = `📝 ${postObj.title} <span class="post-date-label">(${displayDate})</span>`;
 
-            // URLのリンク化処理
+            // URLの自動リンク化処理
             let rawText = postObj.content;
             let escapedText = rawText
                 .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -206,7 +206,7 @@
             });
         }
 
-        // --- 那須さんのお言葉専用の保存機能 ---
+        // --- 保存機能 ---
         function createPost() {
             const dateInput = document.getElementById('input-date').value;
             const titleInput = document.getElementById('input-title').value.trim();
@@ -218,20 +218,13 @@
 
             const uniqueKey = dateInput + "_" + Date.now();
 
-            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）に保存
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
                 ? `${firebaseConfig.databaseURL}posts_nassan/${uniqueKey}.json`
                 : `${firebaseConfig.databaseURL}/posts_nassan/${uniqueKey}.json`;
 
-            const saveData = {
-                title: titleInput,
-                content: contentInput
-            };
+            const saveData = { title: titleInput, content: contentInput };
 
-            fetch(singleUrl, {
-                method: 'PUT',
-                body: JSON.stringify(saveData)
-            })
+            fetch(singleUrl, { method: 'PUT', body: JSON.stringify(saveData) })
             .then(() => {
                 alert(`「${titleInput}」を追加しました！`);
                 fetchAllPosts();
@@ -254,7 +247,7 @@
             }
         }
 
-        // --- 那須さんのお言葉専用の編集機能 ---
+        // --- 編集機能 ---
         function updatePostDetail() {
             const currentParam = new URLSearchParams(window.location.search).get('date');
             const updatedTitle = document.getElementById('edit-title').value.trim();
@@ -263,20 +256,13 @@
             if (!updatedTitle) return alert('タイトルを入力してください。');
             if (!updatedContent) return alert('コンテンツを入力してください。');
 
-            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）を更新
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
                 ? `${firebaseConfig.databaseURL}posts_nassan/${currentParam}.json`
                 : `${firebaseConfig.databaseURL}/posts_nassan/${currentParam}.json`;
             
-            const saveData = {
-                title: updatedTitle,
-                content: updatedContent
-            };
+            const saveData = { title: updatedTitle, content: updatedContent };
 
-            fetch(singleUrl, {
-                method: 'PUT',
-                body: JSON.stringify(saveData)
-            })
+            fetch(singleUrl, { method: 'PUT', body: JSON.stringify(saveData) })
             .then(() => {
                 switchEditMode(false);
                 alert('変更を保存しました。');
@@ -284,19 +270,16 @@
             });
         }
 
-        // --- 那須さんのお言葉専用の削除機能 ---
+        // --- 削除機能 ---
         function deletePost(postKey) {
             const postObj = typeof postData[postKey] === 'object' ? postData[postKey] : { title: "この投稿", content: "" };
             if (!confirm(`「${postObj.title}」を削除してもよろしいですか？`)) return;
 
-            // 💡 那須さんのお言葉専用の引き出し（posts_nassan）から削除
             const singleUrl = firebaseConfig.databaseURL.endsWith('/')
                 ? `${firebaseConfig.databaseURL}posts_nassan/${postKey}.json`
                 : `${firebaseConfig.databaseURL}/posts_nassan/${postKey}.json`;
 
-            fetch(singleUrl, {
-                method: 'DELETE'
-            })
+            fetch(singleUrl, { method: 'DELETE' })
             .then(() => {
                 alert(`投稿を削除しました。`);
                 fetchAllPosts();
